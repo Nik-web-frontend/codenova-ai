@@ -1,11 +1,14 @@
 import React, { Fragment } from 'react'
 import './chat.css'
 import { useState } from 'react'
+import { useRef } from 'react'
+import { useEffect } from 'react'
 
 const Chat = () => {
     const [prompt, setPrompt] = useState('')
     const [msgs, setMsgs] = useState([]);
     let [loading, setLoading] = useState(false);
+    const replyContainerRef = useRef(null);
 
     async function sendPrompt() {
 
@@ -44,6 +47,12 @@ const Chat = () => {
 
     }
 
+    useEffect(() => {
+        if (replyContainerRef.current) {
+            replyContainerRef.current.scrollTop = replyContainerRef.current.scrollHeight;
+        }
+    }, [msgs])
+
 
     return (
         <>
@@ -51,10 +60,10 @@ const Chat = () => {
                 <h1>CodeNova AI</h1>
             </div>
             <div className="prompt-container">
-                <div className="reply-container">
+                <div className="reply-container" ref={replyContainerRef}>
                     {msgs.map((data, idx) => (
                         <Fragment key={idx}>
-                            <div className={`msg-wrap ${data.role === 'user' ? 'user-wrap':'ai-wrap'}`}>
+                            <div className={`msg-wrap ${data.role === 'user' ? 'user-wrap' : 'ai-wrap'}`}>
                                 <p className={`reply ${data.role === 'user' ? 'user-text' : 'ai-text'}`}>{data.text}</p>
                             </div>
                         </Fragment>
