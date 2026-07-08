@@ -30,6 +30,7 @@
 
 .reply {
     color: rgba(255, 255, 255, 0.69);
+
 }
 
 .msg-wrap {
@@ -37,10 +38,12 @@
 }
 
 .user-wrap {
+    display: flex;
     justify-content: flex-end;
 }
 
 .ai-wrap {
+    display: flex;
     justify-content: flex-start;
 }
 
@@ -53,10 +56,105 @@
     width: auto;
     max-width: 50%;
 }
-
 .ai-text {
-    padding: 20px;   
     width: 90%;
+    padding: 20px;
+    line-height: 1.7;
+    word-break: break-word;
+}
+
+.ai-text p {
+    margin: 0 0 16px;
+}
+
+.ai-text h1 {
+    font-size: 2rem;
+    margin: 24px 0 16px;
+}
+
+.ai-text h2 {
+    font-size: 1.6rem;
+    margin: 20px 0 14px;
+}
+
+.ai-text h3 {
+    font-size: 1.3rem;
+    margin: 18px 0 12px;
+}
+
+.ai-text ul,
+.ai-text ol {
+    margin: 16px 0;
+    padding-left: 24px;
+}
+
+.ai-text li {
+    margin-bottom: 8px;
+}
+
+.ai-text pre {
+    background-color: #1e1e1e;
+    border-radius: 12px;
+    padding: 16px;
+    overflow-x: auto;
+    margin: 20px 0;
+}
+
+.ai-text pre code {
+    font-family: Consolas, Monaco, monospace;
+    font-size: 15px;
+    line-height: 1.6;
+}
+
+.ai-text :not(pre) > code {
+    background-color: #323232;
+    padding: 2px 6px;
+    border-radius: 5px;
+    font-size: 0.9em;
+}
+
+.ai-text table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 20px 0;
+}
+
+.ai-text th,
+.ai-text td {
+    border: 1px solid #444;
+    padding: 10px 14px;
+    text-align: left;
+}
+
+.ai-text th {
+    background-color: #2d2d2d;
+}
+
+.ai-text tr:nth-child(even) {
+    background-color: #1d1d1d;
+}
+
+.ai-text blockquote {
+    border-left: 4px solid #4f46e5;
+    margin: 20px 0;
+    padding-left: 16px;
+    color: #bcbcbc;
+    font-style: italic;
+}
+
+.ai-text hr {
+    border: none;
+    border-top: 1px solid #444;
+    margin: 24px 0;
+}
+
+.ai-text a {
+    color: #58a6ff;
+    text-decoration: none;
+}
+
+.ai-text a:hover {
+    text-decoration: underline;
 }
 
 
