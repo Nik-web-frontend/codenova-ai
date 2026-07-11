@@ -7,6 +7,8 @@ import { useRef } from 'react'
 import { useEffect } from 'react'
 import CodeBlock from '../components/CodeBlock'
 
+import { FiArrowUp } from "react-icons/fi";
+
 
 const Chat = () => {
     const mock = true;
@@ -15,6 +17,7 @@ const Chat = () => {
     const [loading, setLoading] = useState(false);
     const replyContainerRef = useRef(null);
     const textareaRef = useRef(null);
+    const lastAIReplyRef = useRef(null);
 
 
     async function sendPrompt() {
@@ -149,42 +152,49 @@ Happy Coding 🚀
 
 
     useEffect(() => {
-        if (replyContainerRef.current) {
-            replyContainerRef.current.scrollTop = replyContainerRef.current.scrollHeight;
+        if (lastAIReplyRef.current) {
+            lastAIReplyRef.current.scrollIntoView({
+                behavior: "smooth",
+                block: "start",
+            });
         }
-    }, [msgs])
+    }, [msgs]);
 
 
     return (
         <>
-            <div className="navbar">
-                <h1>CodeNova AI</h1>
-            </div>
-            
             <div className="prompt-container">
                 <div className="reply-container" ref={replyContainerRef}>
-                    {msgs.map((data, idx) => (
-                        <Fragment key={idx}>
-                            <div className={`msg-wrap ${data.role === 'user' ? 'user-wrap' : 'ai-wrap'} `}>
+                    <div className="reply-content">
+                        {msgs.map((data, idx) => (
+                            <Fragment key={idx}>
+                                <div className={`msg-wrap ${data.role === 'user' ? 'user-wrap' : 'ai-wrap'} `}>
 
-                                {
-                                    data.role === 'user' ?
-                                        <p className='reply user-text'>{data.text}</p> :
-                                        (
-                                            <div className="reply ai-text">
-                                                <ReactMarkdown
-                                                    remarkPlugins={[remarkGfm]}
-                                                    components={{
-                                                        code: CodeBlock
-                                                    }} >{data.text}</ReactMarkdown>
+                                    {
+                                        data.role === 'user' ?
+                                            <p className='reply user-text'>{data.text}</p> :
+                                            (
+                                                <div className="reply ai-text"
+                                                    ref={
+                                                        data.role === "AI" && idx === msgs.length - 1
+                                                            ? lastAIReplyRef
+                                                            : null
+                                                    }
+                                                >
+                                                    <ReactMarkdown
+                                                        remarkPlugins={[remarkGfm]}
+                                                        components={{
+                                                            code: CodeBlock
+                                                        }} >{data.text}</ReactMarkdown>
 
-                                            </div>
-                                        )
-                                }
-                            </div>
-                        </Fragment>
+                                                </div>
+                                            )
+                                    }
+                                </div>
+                            </Fragment>
 
-                    ))}
+                        ))}
+                    </div>
                 </div>
 
                 {loading && (
@@ -194,7 +204,7 @@ Happy Coding 🚀
                     <textarea placeholder='Ask Something...' value={prompt} onChange={(e) => {
                         setPrompt(e.target.value)
                         e.target.style.height = "auto";
-                        e.target.style.height = `${e.target.scrollHeight} px`;
+                        e.target.style.height = `${e.target.scrollHeight}px`;
                     }}
 
                         onKeyDown={(e) => {
@@ -207,9 +217,13 @@ Happy Coding 🚀
                         ref={textareaRef}
                     ></textarea>
 
-                    <button className='send-btn' onClick={sendPrompt}
+                    <button
+                        className="send-btn"
+                        onClick={sendPrompt}
                         disabled={loading || !prompt.trim()}
-                    >{loading ? "Generating..." : "send"}</button>
+                    >
+                        <FiArrowUp size={20} />
+                    </button>
                 </div>
 
             </div>

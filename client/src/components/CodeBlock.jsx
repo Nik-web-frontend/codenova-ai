@@ -1,11 +1,8 @@
 import { React, useState } from 'react';
 import hljs from 'highlight.js'
 import './codeBlock.css'
-
-
+import "highlight.js/styles/github-dark.css"
 import { FiCheck, FiCopy } from 'react-icons/fi';
-
-
 
 const languageNames = {
     js: "JavaScript",

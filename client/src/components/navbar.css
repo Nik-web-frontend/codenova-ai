@@ -1,0 +1,12 @@
+.navbar {
+    color: white;
+    height: 80px;
+    align-content: center;
+    padding: 0 20px;
+}
+
+@media (max-width: 768px) {
+    .navbar h1 {
+        font-size: 2rem;
+    }
+}
