@@ -1,0 +1,21 @@
+.ai-text .code-block{
+    font-family: Consolas, Monaco, monospace;
+    font-size: 15px;
+    line-height: 1.6;
+
+}
+
+.ai-text .code-block .code-header {
+    display: flex;
+    justify-content: space-between;
+}
+
+.ai-text .code-block .code-header .copy-btn {
+    background-color: transparent;
+    color: white;
+    outline: none;
+    border: none;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}

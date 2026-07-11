@@ -1,20 +1,21 @@
 import React, { Fragment } from 'react'
 import ReactMarkdown from 'react-markdown'
-import hljs from 'highlight.js'
-import "highlight.js/styles/github-dark.css"
 import remarkGfm from 'remark-gfm'
 import './chat.css'
 import { useState } from 'react'
 import { useRef } from 'react'
 import { useEffect } from 'react'
+import CodeBlock from '../components/CodeBlock'
+
 
 const Chat = () => {
-    const mock = false;
+    const mock = true;
     const [prompt, setPrompt] = useState('')
     const [msgs, setMsgs] = useState([]);
-    let [loading, setLoading] = useState(false);
+    const [loading, setLoading] = useState(false);
     const replyContainerRef = useRef(null);
     const textareaRef = useRef(null);
+
 
     async function sendPrompt() {
 
@@ -112,7 +113,7 @@ this is a smaple paragraph, Lorem ipsum dolor sit amet consectetur adipisicing e
 Happy Coding 🚀
 `
                 }
-                console.log(data.response)
+                // console.log(data.response)
             }
             else {
                 const response = await fetch("http://localhost:5000/api/chat", {
@@ -145,26 +146,7 @@ Happy Coding 🚀
 
     }
 
-    function MyCodeBlock({children, className}) {
 
-        if (!className) {
-            return <code>{children}</code>
-        }
-        const result = hljs.highlight(children, {
-            language: "javascript"
-        })
-
-        console.log(result);
-        return (
-            <pre>
-                <code
-                    dangerouslySetInnerHTML={{
-                        __html: result.value,
-                    }}
-                />
-            </pre>
-        );
-    }
 
     useEffect(() => {
         if (replyContainerRef.current) {
@@ -178,22 +160,23 @@ Happy Coding 🚀
             <div className="navbar">
                 <h1>CodeNova AI</h1>
             </div>
+            
             <div className="prompt-container">
                 <div className="reply-container" ref={replyContainerRef}>
                     {msgs.map((data, idx) => (
                         <Fragment key={idx}>
-                            <div className={`msg - wrap ${data.role === 'user' ? 'user-wrap' : 'ai-wrap'} `}>
+                            <div className={`msg-wrap ${data.role === 'user' ? 'user-wrap' : 'ai-wrap'} `}>
 
                                 {
                                     data.role === 'user' ?
                                         <p className='reply user-text'>{data.text}</p> :
                                         (
                                             <div className="reply ai-text">
-                                                <ReactMarkdown 
-                                                remarkPlugins={[remarkGfm]}
-                                                components={{
-                                                    code: MyCodeBlock
-                                                }} >{data.text}</ReactMarkdown>
+                                                <ReactMarkdown
+                                                    remarkPlugins={[remarkGfm]}
+                                                    components={{
+                                                        code: CodeBlock
+                                                    }} >{data.text}</ReactMarkdown>
 
                                             </div>
                                         )
@@ -224,7 +207,7 @@ Happy Coding 🚀
                         ref={textareaRef}
                     ></textarea>
 
-                    <button onClick={sendPrompt}
+                    <button className='send-btn' onClick={sendPrompt}
                         disabled={loading || !prompt.trim()}
                     >{loading ? "Generating..." : "send"}</button>
                 </div>

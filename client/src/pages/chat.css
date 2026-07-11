@@ -100,11 +100,7 @@
     margin: 20px 0;
 }
 
-.ai-text pre code {
-    font-family: Consolas, Monaco, monospace;
-    font-size: 15px;
-    line-height: 1.6;
-}
+
 
 .ai-text :not(pre) > code {
     background-color: #323232;
@@ -171,7 +167,7 @@ textarea {
 }
 
 
-button {
+.send-btn{
     border: none;
     outline: none;
     height: 70px;
