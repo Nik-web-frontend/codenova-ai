@@ -11,7 +11,7 @@ import { FiArrowUp } from "react-icons/fi";
 
 
 const Chat = () => {
-    const mock = true;
+    const mock = false;
     const [prompt, setPrompt] = useState('')
     const [msgs, setMsgs] = useState([]);
     const [loading, setLoading] = useState(false);
@@ -28,7 +28,7 @@ const Chat = () => {
 
         try {
             setLoading(true);
-            setMsgs((prev) => [...prev, { role: "user", text: prompt }])
+            setMsgs((prev) => [...prev, { role: "user", text: prompt }, {role: "AI", text: ""}])
             let data;
             if (mock) {
                 data = {
@@ -133,10 +133,34 @@ Happy Coding 🚀
                     throw new Error("Server error");
                 }
 
-                data = await response.json();
+                const reader = response.body.getReader();
+                const decoder = new TextDecoder();
+
+                let aiResponse = "";
+
+                while (true) {
+
+                    const { done, value } = await reader.read();
+
+                    if (done) break;
+
+                    const chunk = decoder.decode(value);
+
+                    aiResponse += chunk;
+
+                    setMsgs(prev => {
+                        const updated = [...prev];
+
+                        updated[updated.length - 1] = {
+                            ...updated[updated.length - 1],
+                            text: aiResponse,
+                        };
+
+                        return updated;
+                    });
+                }
             }
 
-            setMsgs((prev) => [...prev, { role: 'AI', text: data.response }])
             setPrompt('')
         }
         catch (error) {

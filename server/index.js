@@ -2,7 +2,7 @@ require("dotenv").config();
 
 const { GoogleGenAI } = require("@google/genai");
 
-const cors = require("cors"); 
+const cors = require("cors");
 
 const express = require("express");
 
@@ -25,22 +25,37 @@ app.post('/api/chat', async (req, res) => {
     try {
         const { prompt } = req.body;
 
-        const response = await ai.interactions.create({
+        const stream = await ai.interactions.create({
             model: "gemini-2.5-flash",
-            input: prompt
+            input: prompt,
+            stream: true,
         });
 
-        return res.json({
-            response: response.output_text
-        });
+        res.setHeader("Content-Type", "text/plain; charset=utf-8");
+        res.setHeader("Transfer-Encoding", "chunked");
 
-        console.log(response.output_text)
+        for await (const event of stream) {
+            if (
+                event.event_type === "step.delta" &&
+                event.delta?.type === "text"
+            ) {
+                res.write(event.delta.text);
+            }
+        }
+
+        res.end();
+
     }
     catch (error) {
-        console.log(error)
-        return res.status(500).json({
-            error: "Something went wrong.",
-        })
+        console.error(error);
+
+        if (!res.headersSent) {
+            return res.status(500).json({
+                error: "Something went wrong.",
+            });
+        }
+
+        res.end();
     }
 
 })
