@@ -21,6 +21,10 @@ const Chat = () => {
 
 
     async function sendPrompt() {
+        setPrompt('')
+
+        let aiResponse = "";
+
 
         if (!prompt.trim() || loading) {
             return;
@@ -28,7 +32,7 @@ const Chat = () => {
 
         try {
             setLoading(true);
-            setMsgs((prev) => [...prev, { role: "user", text: prompt }, {role: "AI", text: ""}])
+            setMsgs((prev) => [...prev, { role: "user", text: prompt }, { role: "AI", text: "" }])
             let data;
             if (mock) {
                 data = {
@@ -129,14 +133,14 @@ Happy Coding 🚀
                     }),
                 });
 
+
+
                 if (!response.ok) {
                     throw new Error("Server error");
                 }
 
                 const reader = response.body.getReader();
                 const decoder = new TextDecoder();
-
-                let aiResponse = "";
 
                 while (true) {
 
@@ -161,14 +165,23 @@ Happy Coding 🚀
                 }
             }
 
-            setPrompt('')
         }
         catch (error) {
-            setMsgs((prev) => [...prev, { role: 'AI', text: error.message }])
+            setMsgs(prev => {
+                const updated = [...prev];
+
+                updated[updated.length - 1] = {
+                    ...updated[updated.length - 1],
+                    text: aiResponse ? aiResponse + "\n\n⚠️ Response interrupted." : "❌ Failed to generate response.",
+                };
+
+                return updated;
+            });
         }
         finally {
             setLoading(false)
             textareaRef.current.style.height = "auto";
+
         }
 
     }
