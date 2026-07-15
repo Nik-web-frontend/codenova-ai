@@ -8,6 +8,7 @@ import { useEffect } from 'react'
 import CodeBlock from '../components/CodeBlock'
 
 import { FiArrowUp } from "react-icons/fi";
+import WelcomeScreen from '../components/WelcomeScreen'
 
 
 const Chat = () => {
@@ -203,34 +204,36 @@ Happy Coding 🚀
             <div className="prompt-container">
                 <div className="reply-container" ref={replyContainerRef}>
                     <div className="reply-content">
-                        {msgs.map((data, idx) => (
-                            <Fragment key={idx}>
-                                <div className={`msg-wrap ${data.role === 'user' ? 'user-wrap' : 'ai-wrap'} `}>
+                        {
+                            msgs.length === 0 ? <WelcomeScreen /> :
+                                msgs.map((data, idx) => (
+                                    <Fragment key={idx}>
+                                        <div className={`msg-wrap ${data.role === 'user' ? 'user-wrap' : 'ai-wrap'} `}>
 
-                                    {
-                                        data.role === 'user' ?
-                                            <p className='reply user-text'>{data.text}</p> :
-                                            (
-                                                <div className="reply ai-text"
-                                                    ref={
-                                                        data.role === "AI" && idx === msgs.length - 1
-                                                            ? lastAIReplyRef
-                                                            : null
-                                                    }
-                                                >
-                                                    <ReactMarkdown
-                                                        remarkPlugins={[remarkGfm]}
-                                                        components={{
-                                                            code: CodeBlock
-                                                        }} >{data.text}</ReactMarkdown>
+                                            {
+                                                data.role === 'user' ?
+                                                    <p className='reply user-text'>{data.text}</p> :
+                                                    (
+                                                        <div className="reply ai-text"
+                                                            ref={
+                                                                data.role === "AI" && idx === msgs.length - 1
+                                                                    ? lastAIReplyRef
+                                                                    : null
+                                                            }
+                                                        >
+                                                            <ReactMarkdown
+                                                                remarkPlugins={[remarkGfm]}
+                                                                components={{
+                                                                    code: CodeBlock
+                                                                }} >{data.text}</ReactMarkdown>
 
-                                                </div>
-                                            )
-                                    }
-                                </div>
-                            </Fragment>
+                                                        </div>
+                                                    )
+                                            }
+                                        </div>
+                                    </Fragment>
 
-                        ))}
+                                ))}
                     </div>
                 </div>
 
