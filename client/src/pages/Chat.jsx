@@ -6,6 +6,7 @@ import { useState } from 'react'
 import { useRef } from 'react'
 import { useEffect } from 'react'
 import CodeBlock from '../components/CodeBlock'
+import TypingLoader from '../components/TypingLoader'
 
 import { FiArrowUp } from "react-icons/fi";
 import WelcomeScreen from '../components/WelcomeScreen'
@@ -16,23 +17,26 @@ const Chat = () => {
     const [prompt, setPrompt] = useState('')
     const [msgs, setMsgs] = useState([]);
     const [loading, setLoading] = useState(false);
+    const [isStreaming, setIsStreaming] = useState(false);
     const replyContainerRef = useRef(null);
     const textareaRef = useRef(null);
     const lastAIReplyRef = useRef(null);
 
 
     async function sendPrompt() {
-        setPrompt('')
-
-        let aiResponse = "";
-
 
         if (!prompt.trim() || loading) {
             return;
         }
 
+        setPrompt('')
+        let aiResponse = "";
+        let firstChunk = true;
+
+
         try {
             setLoading(true);
+            setIsStreaming(false)
             setMsgs((prev) => [...prev, { role: "user", text: prompt }, { role: "AI", text: "" }])
             let data;
             if (mock) {
@@ -151,6 +155,11 @@ Happy Coding 🚀
 
                     const chunk = decoder.decode(value);
 
+                    if (firstChunk) {
+                        setIsStreaming(true);
+                        firstChunk = false;
+                    }
+
                     aiResponse += chunk;
 
                     setMsgs(prev => {
@@ -181,6 +190,7 @@ Happy Coding 🚀
         }
         finally {
             setLoading(false)
+            setIsStreaming(false)
             textareaRef.current.style.height = "auto";
 
         }
@@ -206,40 +216,56 @@ Happy Coding 🚀
                     <div className="reply-content">
                         {
                             msgs.length === 0 ? <WelcomeScreen /> :
-                                msgs.map((data, idx) => (
-                                    <Fragment key={idx}>
-                                        <div className={`msg-wrap ${data.role === 'user' ? 'user-wrap' : 'ai-wrap'} `}>
+                                msgs.map((data, idx) => {
+                                    const showTypingLoader = loading && !isStreaming && idx === msgs.length-1 && data.text === "";
+                                    return (
+                                        <Fragment key={idx}>
+                                            <div className={`msg-wrap ${data.role === 'user' ? 'user-wrap' : 'ai-wrap'} `}>
 
-                                            {
-                                                data.role === 'user' ?
-                                                    <p className='reply user-text'>{data.text}</p> :
-                                                    (
-                                                        <div className="reply ai-text"
-                                                            ref={
-                                                                data.role === "AI" && idx === msgs.length - 1
-                                                                    ? lastAIReplyRef
-                                                                    : null
-                                                            }
-                                                        >
-                                                            <ReactMarkdown
-                                                                remarkPlugins={[remarkGfm]}
-                                                                components={{
-                                                                    code: CodeBlock
-                                                                }} >{data.text}</ReactMarkdown>
+                                                {
+                                                    data.role === 'user' ?
+                                                        <p className='reply user-text'>{data.text}</p> :
+                                                        (
+                                                            <div className="reply ai-text"
+                                                                ref={
+                                                                    data.role === "AI" && idx === msgs.length - 1
+                                                                        ? lastAIReplyRef
+                                                                        : null
+                                                                }
+                                                            >
+                                                                {showTypingLoader ?
+                                                                    (
+                                                                        <TypingLoader />
+                                                                    )
+                                                                    :
+                                                                    (
+                                                                        <ReactMarkdown
+                                                                            remarkPlugins={[remarkGfm]}
+                                                                            components={{
+                                                                                code: CodeBlock
+                                                                            }}
+                                                                        >{data.text}</ReactMarkdown>
+                                                                    )
+                                                                }
 
-                                                        </div>
-                                                    )
-                                            }
-                                        </div>
-                                    </Fragment>
 
-                                ))}
+
+
+                                                            </div>
+                                                        )
+                                                }
+                                            </div>
+                                        </Fragment>
+                                    )
+
+                                })
+                        }
                     </div>
                 </div>
 
-                {loading && (
+                {/* {loading && (
                     <p className='reply'>Loading...</p>
-                )}
+                )} */}
                 <div className="user-action">
                     <textarea placeholder='Ask Something...' value={prompt} onChange={(e) => {
                         setPrompt(e.target.value)
